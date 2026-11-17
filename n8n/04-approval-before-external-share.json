@@ -1,0 +1,252 @@
+{
+  "name": "Secure Research Agent: approve before sharing externally",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "external-research",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "34a9f9e8-d9f2-5990-b740-dbe831705942",
+      "name": "External request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "d4c1e7a2-3b5f-4e6a-9c7d-1f2e3a4b5c03"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/research",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ question: $json.body.question }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "fd902318-f3e3-549f-aea8-c4b98a59fa53",
+      "name": "Research agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "researchAgentToken",
+          "name": "Secure Research Agent token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Turn the research report into a readable message with sources.\nconst r = $input.first().json;\nconst sources = new Map();\nfor (const claim of r.claims || []) {\n  for (const c of claim.citations || []) {\n    sources.set(c.evidence_id, `${c.evidence_id}: ${c.title} > ${c.section}${c.page ? ', p.' + c.page : ''} (updated ${c.last_modified})`);\n  }\n}\nconst text = [\n  `*AI-generated research* (status: ${r.status})`,\n  '',\n  r.summary,\n  ...(r.notes || []).map(n => `> ${n}`),\n  '',\n  sources.size ? '*Sources*' : '',\n  ...sources.values(),\n].join('\\n');\nreturn [{ json: { text, status: r.status, question: r.question, sources: [...sources.values()] } }];"
+      },
+      "id": "6c9c1ffa-896f-53a0-bf57-3ef1760bdafe",
+      "name": "Format answer with sources",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendAndWait",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "#ai-approvals"
+        },
+        "message": "=An AI answer is about to be sent outside the company.\n\nQuestion: {{ $json.question }}\n\n{{ $json.text }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "limitType": "afterTimeInterval",
+              "resumeAmount": 24,
+              "resumeUnit": "hours"
+            }
+          }
+        }
+      },
+      "id": "3a6dd693-7299-50b0-aac4-e503a220a496",
+      "name": "Ask manager to approve",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        720,
+        0
+      ],
+      "notes": "Needs Slack credentials. Every decision is recorded in the execution log."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f1",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "82afdd5e-d79a-5d62-9a10-bacbe5fa295a",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s1",
+              "name": "result",
+              "value": "approved and sent",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "df5f798e-7eb7-5b29-8143-3392b196d925",
+      "name": "Send answer (placeholder)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1200,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s2",
+              "name": "result",
+              "value": "rejected, not sent",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6a75c05e-24ba-5738-b2ff-1504178ce2ba",
+      "name": "Log rejection (placeholder)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1200,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "External request": {
+      "main": [
+        [
+          {
+            "node": "Research agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research agent": {
+      "main": [
+        [
+          {
+            "node": "Format answer with sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format answer with sources": {
+      "main": [
+        [
+          {
+            "node": "Ask manager to approve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask manager to approve": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Send answer (placeholder)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log rejection (placeholder)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [],
+  "id": "ffd32b57b70655e0"
+}

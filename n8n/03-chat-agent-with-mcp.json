@@ -1,0 +1,125 @@
+{
+  "name": "Secure Research Agent: chat assistant over MCP",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "36d10f10-eab4-591e-beb7-714708fd788b",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "c2a8f0e4-7d4b-4b1f-8f8e-2a6d9b3c4e02"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You help employees with questions about company documents. Always call the `research` tool from the Secure Research Agent and answer ONLY from its verified claims. Keep the evidence ids and list the sources. If the status is insufficient_evidence, say the documents do not contain the answer. If it is conflicting_evidence, show both versions with their dates. Never guess."
+        }
+      },
+      "id": "7f220001-3319-5715-a080-b028eddfff84",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        300,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "863b341b-d183-5584-9ab5-f4e415d6d9e0",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://localhost:8001/mcp",
+        "authentication": "bearerAuth",
+        "include": "selected",
+        "includeTools": [
+          "research",
+          "list_documents"
+        ],
+        "options": {}
+      },
+      "id": "baa4ecae-7911-50a5-92e4-085024e7c2e6",
+      "name": "Secure Research Agent (MCP)",
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        440,
+        220
+      ],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "researchAgentToken",
+          "name": "Secure Research Agent token"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Secure Research Agent (MCP)": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [],
+  "id": "c98b84d859265534"
+}

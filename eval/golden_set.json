@@ -1,0 +1,35 @@
+{
+  "description": "Multi-step research questions. facts = strings that must appear in a correct answer. relevant = documents that hold the answer AND the user may read.",
+  "questions": [
+    {"id": "c1", "type": "compare", "user": "bilal", "question": "What changed between the 2023 and 2025 travel policy?", "facts": ["3,000", "4,500", "15,000", "22,000", "65", "department head"], "relevant": ["travel-2023", "travel-2025"], "status": "answered"},
+    {"id": "c2", "type": "compare", "user": "omar", "question": "How is the 2025 travel policy different from the 2023 version?", "facts": ["3,000", "4,500", "15,000", "22,000", "65", "department head"], "relevant": ["travel-2023", "travel-2025"], "status": "answered"},
+
+    {"id": "m1", "type": "multi-part", "user": "omar", "question": "Who approves international travel and what is the mileage rate?", "facts": ["department head", "65"], "relevant": ["travel-2025"], "status": "answered"},
+    {"id": "m2", "type": "multi-part", "user": "sara", "question": "When must expense claims be submitted and are receipts needed?", "facts": ["30 days", "2,000"], "relevant": ["expenses"], "status": "answered"},
+    {"id": "m3", "type": "multi-part", "user": "ayesha", "question": "How many days of annual leave do employees get and can I work from home?", "facts": ["20 days", "2 days per week"], "relevant": ["handbook"], "status": "answered"},
+    {"id": "m4", "type": "multi-part", "user": "sara", "question": "How quickly must a Sev1 incident be acknowledged and when is a postmortem written?", "facts": ["15 minutes", "5 business days"], "relevant": ["runbook"], "status": "answered"},
+    {"id": "m5", "type": "multi-part", "user": "zain", "question": "How long must passwords be and is MFA required for VPN?", "facts": ["14 characters", "mandatory"], "relevant": ["it-security"], "status": "answered"},
+    {"id": "m6", "type": "multi-part", "user": "bilal", "question": "What is the Q3 budget for cloud infrastructure and how much was actually spent?", "facts": ["18.0", "19.6"], "relevant": ["budget-q3"], "status": "answered"},
+    {"id": "m7", "type": "multi-part", "user": "ayesha", "question": "What is the maximum monthly salary for grade G3 and what is the annual increment range?", "facts": ["600000", "8 and 15 percent"], "relevant": ["salary-bands"], "status": "answered"},
+    {"id": "m8", "type": "multi-part", "user": "omar", "question": "What did the board approve about Project Falcon and how many engineers will be hired?", "facts": ["4 million", "12 additional engineers"], "relevant": ["board-2025-10"], "status": "answered"},
+
+    {"id": "s1", "type": "single", "user": "sara", "question": "What is the mileage reimbursement per km?", "facts": ["65"], "relevant": ["travel-2025"], "status": "answered"},
+    {"id": "s2", "type": "single", "user": "bilal", "question": "Above what amount is an itemised receipt required?", "facts": ["2,000"], "relevant": ["expenses"], "status": "answered"},
+    {"id": "s3", "type": "single", "user": "sara", "question": "When does a company laptop lock automatically?", "facts": ["5 minutes"], "relevant": ["it-security"], "status": "answered"},
+
+    {"id": "x1", "type": "conflict", "user": "sara", "question": "What is the daily meal allowance for domestic travel?", "facts": ["3,000", "4,500"], "relevant": ["travel-2023", "travel-2025"], "status": "conflicting_evidence"},
+    {"id": "x2", "type": "conflict", "user": "bilal", "question": "What is the maximum hotel rate per night for domestic business travel?", "facts": ["15,000", "22,000"], "relevant": ["travel-2023", "travel-2025"], "status": "conflicting_evidence"},
+
+    {"id": "r1", "type": "restricted", "user": "sara", "question": "What is Project Falcon and how many engineers will be hired?", "facts": [], "relevant": [], "status": "insufficient_evidence"},
+    {"id": "r2", "type": "restricted", "user": "bilal", "question": "What is the maximum monthly salary for grade G3 and what is the annual increment range?", "facts": [], "relevant": [], "status": "insufficient_evidence"},
+    {"id": "r3", "type": "restricted", "user": "ayesha", "question": "What is the Q3 budget for cloud infrastructure and how much was actually spent?", "facts": [], "relevant": [], "status": "insufficient_evidence"},
+    {"id": "r4", "type": "restricted", "user": "zain", "question": "What changed between the 2023 and 2025 travel policy?", "facts": [], "relevant": [], "status": "insufficient_evidence"},
+
+    {"id": "u1", "type": "unanswerable", "user": "ayesha", "question": "What is the company stock price?", "facts": [], "relevant": [], "status": "insufficient_evidence"},
+    {"id": "u2", "type": "unanswerable", "user": "omar", "question": "What is the dress code for client visits and who approves exceptions?", "facts": [], "relevant": [], "status": "insufficient_evidence"},
+    {"id": "u3", "type": "unanswerable", "user": "sara", "question": "Which cloud provider hosts the production database?", "facts": [], "relevant": [], "status": "insufficient_evidence"},
+
+    {"id": "p1", "type": "paraphrase", "user": "ayesha", "question": "How many vacation days do I get and can I work from home?", "facts": ["20 days", "2 days per week"], "relevant": ["handbook"], "status": "answered"},
+    {"id": "p2", "type": "paraphrase", "user": "sara", "question": "How fast do we have to respond when production is completely down?", "facts": ["15 minutes"], "relevant": ["runbook"], "status": "answered"}
+  ]
+}

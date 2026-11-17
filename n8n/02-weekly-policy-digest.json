@@ -1,0 +1,158 @@
+{
+  "name": "Secure Research Agent: weekly policy-change digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "fa6131ba-d655-58c8-a237-c4fe63338949",
+      "name": "Every Monday 9:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "cacf209c-8846-54b6-942d-52f661aebce6",
+      "name": "Run now",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/research",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ question: 'What changed between the 2023 and 2025 travel policy?' }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "0be2e182-595f-5619-a915-6d2ebbf4818b",
+      "name": "What changed in the travel policy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        100
+      ],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "researchAgentToken",
+          "name": "Secure Research Agent token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Turn the research report into a readable message with sources.\nconst r = $input.first().json;\nconst sources = new Map();\nfor (const claim of r.claims || []) {\n  for (const c of claim.citations || []) {\n    sources.set(c.evidence_id, `${c.evidence_id}: ${c.title} > ${c.section}${c.page ? ', p.' + c.page : ''} (updated ${c.last_modified})`);\n  }\n}\nconst text = [\n  `*Weekly policy digest (AI-generated)* (status: ${r.status})`,\n  '',\n  r.summary,\n  ...(r.notes || []).map(n => `> ${n}`),\n  '',\n  sources.size ? '*Sources*' : '',\n  ...sources.values(),\n].join('\\n');\nreturn [{ json: { text, status: r.status, question: r.question, sources: [...sources.values()] } }];"
+      },
+      "id": "5219805b-a3d4-5ed4-ac38-b74ba06e4be4",
+      "name": "Format digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "#policy-updates"
+        },
+        "text": "={{ $json.text }}",
+        "otherOptions": {}
+      },
+      "id": "436249b1-bd37-54ca-bd63-a1244eb80c82",
+      "name": "Post to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        780,
+        100
+      ],
+      "disabled": true,
+      "notes": "Enable after adding your Slack credentials."
+    }
+  ],
+  "connections": {
+    "Every Monday 9:00": {
+      "main": [
+        [
+          {
+            "node": "What changed in the travel policy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run now": {
+      "main": [
+        [
+          {
+            "node": "What changed in the travel policy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "What changed in the travel policy": {
+      "main": [
+        [
+          {
+            "node": "Format digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format digest": {
+      "main": [
+        [
+          {
+            "node": "Post to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [],
+  "id": "fc71cd5948d85c3c"
+}

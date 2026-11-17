@@ -1,0 +1,68 @@
+{
+  "name": "Secure Research Agent: direct MCP call (no LLM)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "cacf209c-8846-54b6-942d-52f661aebce6",
+      "name": "Run now",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "serverTransport": "httpStreamable",
+        "endpointUrl": "http://localhost:8001/mcp",
+        "authentication": "bearerAuth",
+        "tool": {
+          "__rl": true,
+          "mode": "id",
+          "value": "research"
+        },
+        "inputMode": "json",
+        "jsonInput": "{\n  \"question\": \"Who approves international travel and what is the mileage rate?\"\n}",
+        "options": {}
+      },
+      "id": "11af431b-f9a9-5643-9027-369790aee210",
+      "name": "Call research tool",
+      "type": "@n8n/n8n-nodes-langchain.mcpClient",
+      "typeVersion": 1.1,
+      "position": [
+        260,
+        0
+      ],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "researchAgentToken",
+          "name": "Secure Research Agent token"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Run now": {
+      "main": [
+        [
+          {
+            "node": "Call research tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [],
+  "id": "a0b14d55f74d5802"
+}

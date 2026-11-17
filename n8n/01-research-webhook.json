@@ -1,0 +1,123 @@
+{
+  "name": "Secure Research Agent: ask over webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "research-question",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "51d5f148-4d1f-5d22-9d1b-5c2029d6077e",
+      "name": "Question received",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "b7d6b1a4-5c1e-4c33-9a5e-6f0c3d2a1e01"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/research",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ question: $json.body.question }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "fd902318-f3e3-549f-aea8-c4b98a59fa53",
+      "name": "Research agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        0
+      ],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "researchAgentToken",
+          "name": "Secure Research Agent token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Turn the research report into a readable message with sources.\nconst r = $input.first().json;\nconst sources = new Map();\nfor (const claim of r.claims || []) {\n  for (const c of claim.citations || []) {\n    sources.set(c.evidence_id, `${c.evidence_id}: ${c.title} > ${c.section}${c.page ? ', p.' + c.page : ''} (updated ${c.last_modified})`);\n  }\n}\nconst text = [\n  `*AI-generated research* (status: ${r.status})`,\n  '',\n  r.summary,\n  ...(r.notes || []).map(n => `> ${n}`),\n  '',\n  sources.size ? '*Sources*' : '',\n  ...sources.values(),\n].join('\\n');\nreturn [{ json: { text, status: r.status, question: r.question, sources: [...sources.values()] } }];"
+      },
+      "id": "6c9c1ffa-896f-53a0-bf57-3ef1760bdafe",
+      "name": "Format answer with sources",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "d1f147e1-1621-59f5-b1a5-cb2df695e753",
+      "name": "Reply",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        780,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Question received": {
+      "main": [
+        [
+          {
+            "node": "Research agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research agent": {
+      "main": [
+        [
+          {
+            "node": "Format answer with sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format answer with sources": {
+      "main": [
+        [
+          {
+            "node": "Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [],
+  "id": "e4bc7a5cf3615db1"
+}

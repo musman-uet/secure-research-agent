@@ -1,0 +1,23 @@
+{
+  "users": {
+    "ayesha": [
+      "all-staff",
+      "hr-team"
+    ],
+    "bilal": [
+      "all-staff",
+      "finance-team"
+    ],
+    "sara": [
+      "all-staff",
+      "engineering"
+    ],
+    "omar": [
+      "all-staff",
+      "leadership"
+    ],
+    "zain": [
+      "contractors"
+    ]
+  }
+}

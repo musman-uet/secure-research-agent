@@ -1,0 +1,108 @@
+{
+  "documents": [
+    {
+      "doc_id": "handbook",
+      "title": "Employee Handbook",
+      "path": "docs/employee_handbook.docx",
+      "source_url": "https://lakeview.sharepoint.com/sites/HR/Shared%20Documents/Employee%20Handbook.docx",
+      "last_modified": "2025-01-10",
+      "allowed_principals": [
+        "all-staff"
+      ]
+    },
+    {
+      "doc_id": "travel-2023",
+      "title": "Travel Policy 2023",
+      "path": "docs/travel_policy_2023.pdf",
+      "source_url": "https://lakeview.sharepoint.com/sites/Finance/Policies/Travel%20Policy%202023.pdf",
+      "last_modified": "2023-02-01",
+      "allowed_principals": [
+        "all-staff"
+      ]
+    },
+    {
+      "doc_id": "travel-2025",
+      "title": "Travel Policy 2025",
+      "path": "docs/travel_policy_2025.pdf",
+      "source_url": "https://lakeview.sharepoint.com/sites/Finance/Policies/Travel%20Policy%202025.pdf",
+      "last_modified": "2025-03-15",
+      "allowed_principals": [
+        "all-staff"
+      ]
+    },
+    {
+      "doc_id": "expenses",
+      "title": "Expense Claims Procedure",
+      "path": "docs/expense_claims_procedure.pdf",
+      "source_url": "https://lakeview.sharepoint.com/sites/Finance/Policies/Expense%20Claims%20Procedure.pdf",
+      "last_modified": "2024-08-20",
+      "allowed_principals": [
+        "all-staff"
+      ]
+    },
+    {
+      "doc_id": "salary-bands",
+      "title": "Salary Bands 2025",
+      "path": "docs/salary_bands_2025.xlsx",
+      "source_url": "https://lakeview.sharepoint.com/sites/HR/Confidential/Salary%20Bands%202025.xlsx",
+      "last_modified": "2025-01-15",
+      "allowed_principals": [
+        "hr-team",
+        "leadership"
+      ]
+    },
+    {
+      "doc_id": "budget-q3",
+      "title": "Q3 2025 Department Budget",
+      "path": "docs/q3_2025_budget.xlsx",
+      "source_url": "https://lakeview.sharepoint.com/sites/Finance/Restricted/Q3%202025%20Budget.xlsx",
+      "last_modified": "2025-10-05",
+      "allowed_principals": [
+        "finance-team",
+        "leadership"
+      ]
+    },
+    {
+      "doc_id": "runbook",
+      "title": "Incident Response Runbook",
+      "path": "docs/incident_response_runbook.docx",
+      "source_url": "https://lakeview.sharepoint.com/sites/Engineering/Runbooks/Incident%20Response%20Runbook.docx",
+      "last_modified": "2025-06-01",
+      "allowed_principals": [
+        "engineering"
+      ]
+    },
+    {
+      "doc_id": "board-2025-10",
+      "title": "Board Meeting Minutes - October 2025",
+      "path": "docs/board_minutes_2025_10.pdf",
+      "source_url": "https://lakeview.sharepoint.com/sites/Leadership/Board/Board%20Minutes%202025-10.pdf",
+      "last_modified": "2025-10-16",
+      "allowed_principals": [
+        "leadership"
+      ]
+    },
+    {
+      "doc_id": "it-security",
+      "title": "IT Security Policy",
+      "path": "docs/it_security_policy.md",
+      "source_url": "https://lakeview.sharepoint.com/sites/IT/Policies/IT%20Security%20Policy.md",
+      "last_modified": "2025-04-02",
+      "allowed_principals": [
+        "all-staff",
+        "contractors"
+      ]
+    },
+    {
+      "doc_id": "contractors",
+      "title": "Contractor Onboarding Guide",
+      "path": "docs/contractor_onboarding.docx",
+      "source_url": "https://lakeview.sharepoint.com/sites/HR/Shared%20Documents/Contractor%20Onboarding%20Guide.docx",
+      "last_modified": "2024-11-12",
+      "allowed_principals": [
+        "contractors",
+        "hr-team"
+      ]
+    }
+  ]
+}
